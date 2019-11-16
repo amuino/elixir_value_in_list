@@ -29,7 +29,9 @@ Three scenarios are benchmarked, with 100% (all queried items are in the set), 5
 - _Guard condition_ is the slowest. This matches the intuition that it needs to iterate over the list (`O(n)`), which is less efficient that a Set (`O(1)`) or pattern matching (compiles to a tree, so likely `O(log(n))`)
 - Surprisingly, the erlang `sets` module is not even closer to the elixir `HashSet` and is even slower than _Pattern Matching_.
 - I can't figure out why all solutions are slower the more hits on the input set. Makes me suspect a problem with my data or implementation.
+- With larger sets, the performance of both `HashSet` and `sets` falls slightly.
 
+### 2500 words on the set
 ```
 - Running benchmark with 2500 words on the set
 - Benchmark will lookup 1000 words per iteration (multiply ips by this factor)
@@ -74,4 +76,41 @@ HashSet                          9.72 K
 pattern matching on value        7.26 K - 1.34x slower +34.87 μs
 erlang sets                      5.15 K - 1.89x slower +91.12 μs
 guard: value in list            0.118 K - 82.56x slower +8390.99 μs
+```
+
+### 235886 words on the set
+
+(Pattern Matching and Guard Condition are disabled since the compile time is crazy and didn't have enough patience)
+
+```
+- Running benchmark with 235886 words on the set
+- Benchmark will lookup 1000 words per iteration (multiply ips by this factor)
+
+##### With input 0% hit #####
+Name                  ips        average  deviation         median         99th %
+HashSet            8.97 K      111.50 μs    ±16.48%      106.98 μs      198.98 μs
+erlang sets        4.83 K      207.22 μs    ±11.80%      198.98 μs      320.93 μs
+
+Comparison:
+HashSet            8.97 K
+erlang sets        4.83 K - 1.86x slower +95.71 μs
+
+##### With input 50% hit #####
+Name                  ips        average  deviation         median         99th %
+HashSet            7.46 K      134.06 μs    ±14.19%      128.98 μs      229.98 μs
+erlang sets        4.71 K      212.15 μs    ±10.20%      205.98 μs      324.98 μs
+
+Comparison:
+HashSet            7.46 K
+erlang sets        4.71 K - 1.58x slower +78.09 μs
+
+##### With input 100% hit #####
+Name                  ips        average  deviation         median         99th %
+HashSet            6.12 K      163.36 μs    ±17.38%      150.98 μs      278.98 μs
+erlang sets        4.61 K      217.05 μs    ±10.30%      209.98 μs      326.98 μs
+
+Comparison:
+HashSet            6.12 K
+erlang sets        4.61 K - 1.33x slower +53.69 μs
+
 ```
